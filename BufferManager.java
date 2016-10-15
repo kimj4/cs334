@@ -145,14 +145,18 @@ public class BufferManager
         if (map.get(pinPageId) != null) {
             frameTable[map.get(pinPageId)].pinCount++;
             return bufferPool[map.get(pinPageId)];
+        // if not, load it into pool
         } else {
             int emptySlot = clock();
             map.put(pinPageId, emptySlot);
+            // if there is an available frame
             if (emptySlot != -1) {
                 DBFile dbFile = new DBFile(fileName);
                 if (!emptyPage) {
+                    // checking if the contents of the frame changed
                     byte[] tempArray = new byte[poolSize()];
-                    System.arraycopy(bufferPool[map.get(pinPageId)].data, 0, tempArray, 0, poolSize() );
+                    System.arraycopy(bufferPool[map.get(pinPageId)].data, 0,
+                                     tempArray, 0, poolSize() );
                     dbFile.readPage(pinPageId, bufferPool[map.get(pinPageId)]);
                     if (!Arrays.equals(tempArray, bufferPool[map.get(pinPageId)].data)) {
                         frameTable[map.get(pinPageId)].dirty = true;
@@ -219,10 +223,8 @@ public class BufferManager
     {
         DBFile dbFile = new DBFile(fileName);
         int firstPageId = dbFile.allocatePages(numPages);
-        System.out.println("newPage firstPageId: " + firstPageId);
         Page firstPage = pinPage(firstPageId, fileName, false);
         if (map.get(firstPageId) != null) {
-            System.out.println("newpage returns something");
             return new Pair(firstPageId, firstPage);
         } else {
             return null;
