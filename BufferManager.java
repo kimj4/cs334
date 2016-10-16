@@ -87,12 +87,14 @@ public class BufferManager
         boolean done = false;
         int returnidx = -1;
         int idx;
+        int initialClockPosition = clockPosition;
         while (!done) {
-            idx = clockPosition % (poolSize() - 1);
+
+            idx = clockPosition % (poolSize());
             // if nothing has been written in the frame, return it
-            if (frameTable[idx].fileName == null) {
-                returnidx = idx;
-            } else {
+            // if (frameTable[idx].fileName == null) {
+            //     returnidx = idx;
+            // } else {
                 if (frameTable[idx].pinCount == 0) {
                     if (frameTable[idx].referenced == false) {
                         returnidx = idx;
@@ -110,15 +112,22 @@ public class BufferManager
                         frameTable[idx].referenced = false;
                     }
                 }
-            }
+            // }
             // if the returnidx has been changed, delete previous reference
             //  to that frame slot in the map
-            if (returnidx != -1) {
+            // if the clock went around two cycles without finding anything,
+            //  return -1;
+            if (clockPosition == (initialClockPosition + (2 * (poolSize())))) {
+                done = true;
+                // clockPosition++;
+            } else if (returnidx != -1) {
                 done = true;
                 map.values().remove(returnidx);
+                clockPosition++;
             } else {
                 clockPosition++;
             }
+
         }
         return returnidx;
     }
@@ -148,9 +157,10 @@ public class BufferManager
         // if not, load it into pool
         } else {
             int emptySlot = clock();
-            map.put(pinPageId, emptySlot);
+            // map.put(pinPageId, emptySlot);
             // if there is an available frame
             if (emptySlot != -1) {
+                map.put(pinPageId, emptySlot);
                 DBFile dbFile = new DBFile(fileName);
                 if (!emptyPage) {
                     // checking if the contents of the frame changed
