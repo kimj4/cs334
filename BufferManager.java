@@ -290,7 +290,7 @@ public class BufferManager
     public void flushAllPages() throws IOException
     {
         for (int key: map.keySet()) {
-            if (frameTable[map.get(key)].dirty = true) {
+            if (frameTable[map.get(key)].dirty == true) {
                 flushPage(frameTable[map.get(key)].pageNum, frameTable[map.get(key)].fileName);
             }
         }
