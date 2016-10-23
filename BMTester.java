@@ -160,7 +160,9 @@ public class BMTester
     }
 
 
+
     public static final String FILENAME = "__testing";
+
     public static final int NUMBUF = 20;
 
 

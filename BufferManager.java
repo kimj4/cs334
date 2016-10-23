@@ -252,6 +252,12 @@ public class BufferManager
      */
     public void freePage(int pageId, String fileName) throws IOException
     {
+        DBFile dbFile = new DBFile(fileName);
+        if (frameTable[map.get(pageId)].pinCount == 0) {
+            dbFile.deallocatePages(pageId, 1);
+        } else {
+            throw new PagePinnedException();
+        }
     }
 
     /**
@@ -283,6 +289,11 @@ public class BufferManager
      */
     public void flushAllPages() throws IOException
     {
+        for (int key: map.keySet()) {
+            if (frameTable[map.get(key)].dirty = true) {
+                flushPage(frameTable[map.get(key)].pageNum, frameTable[map.get(key)].fileName);
+            }
+        }
     }
 
     /**

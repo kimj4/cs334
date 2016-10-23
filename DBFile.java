@@ -19,7 +19,7 @@ public class DBFile
     private String dataFileName;
     private String mapFileName;
     private int numPages;
-    
+
     /**
      * Creates a database with the specified number of pages. The
      * number of pages in the database can never be increased.
@@ -48,7 +48,7 @@ public class DBFile
         RandomAccessFile mapFile = new RandomAccessFile(mapFileName,"rw");
 
         // Allocate one byte for each page in the data file.
-        mapFile.setLength(numPages); 
+        mapFile.setLength(numPages);
 
         // Fill in map pages with zeros.
         byte[] zeros = new byte[numPages];
@@ -80,7 +80,7 @@ public class DBFile
 
     /**
      * Erases the database entirely from the filesystem. Dangerous to
-     * do if still have a DBFile object that refers to this file. 
+     * do if still have a DBFile object that refers to this file.
      * @param name name of the database.
      * @return true if operation succeeded.
      */
