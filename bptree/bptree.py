@@ -1,28 +1,14 @@
-# b+ tree structure brainstorm
-#  dave says to use map
-#   the key is the search-key value (no duplicates)
-# {
-#
-# }
-#  for n = 3
-# insert 1: "a"
-# {1: [1,"a"]}
-# insert 2: "b"
-# {1: [1, "a", 2, "b"]}
-# insert 3: "c"
-# {1: [1, "a, 2, "b", 3, "c"]} full node, need to split
-# {2: [{1: "a"}, 2, {2: "b", 3: "c"}]}
-# insert 4: "d"
-# {2: [{1: "a"}, 2, {2: "b", 3: "c", 4: "d"}]} full node, need to split
-# {2: [{1: "a"}, 2, {2: "b"}, 3, {3: "c", 4: "d"} ]}
-# insert 5: "e"
-# {2: [{1: "a"}, 2, {2: "b"}, 3, {3: "c", 4: "d", 5: "e"}]} split
-# {2: [{1: "a"}, 2, {2: "b"}, 3, {3: "c"}, 4, {4: "d", 5: "e"}]} root full split
-# {3: {}}
+# nonleaf key_list and pointer_list
+# n = 3
+# key_list: [0, 1]
+# pointer_list [<node1> <node2> <node3>]
+# if key < key_list[0]:
+#   node1
+# if key < key_list[1]:
+#   node2
+# else:
+#   node3
 
-{
-2: (1, 5)
-}
 
 
 
@@ -74,6 +60,12 @@ class Bptree():
             if node.has_space():
                 node.insert_key(key)
                 node.insert_pointer
+                return None
+            else:
+                # split node
+                # return pointer to the newly split node
+
+
 
 
     """Inserts a key-value pair into the tree."""
@@ -82,7 +74,9 @@ class Bptree():
             print "a"
             self.root = Node(self.n)
             self.is_empty = False
-        self.insert_helper(self.root, key, value)
+        new_node = self.insert_helper(self.root, key, value)
+        if new_node: # the node that was previously the root was split
+            self.root = Node(self.n)
 
 
 
