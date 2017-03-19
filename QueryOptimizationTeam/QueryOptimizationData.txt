@@ -1,0 +1,123 @@
+(1)
+select u.url from word w, word_to_url t,url u where w.word ='computer' and w.wid = t.wid and t.urlid = u.urlid;
+15040.975 ms
+
+(2)
+select u.url from word w, word_to_url t,url u where w.word ='student' and w.wid = t.wid and t.urlid = u.urlid;
+15263.209 ms
+
+(3)
+select u.url from word w, word_to_url t,url u where w.word ='admissions' and w.wid = t.wid and t.urlid = u.urlid;
+15175.500 ms
+
+(4)
+select u.url from word w, word_to_url t,url u where w.word ='carleton' and w.wid = t.wid and t.urlid = u.urlid;
+15645.325 ms
+
+(1)
+Hash Join  (cost=6884.09..3250631.96 rows=772 width=107)
+   Hash Cond: (t.urlid = (u.urlid)::double precision)
+   ->  Hash Join  (cost=3727.18..3235899.50 rows=778 width=8)
+         Hash Cond: (t.wid = w.wid)
+         ->  Seq Scan on word_to_url t  (cost=0.00..2629731.12 rows=160648912 width=12)
+         ->  Hash  (cost=3727.16..3727.16 rows=1 width=4)
+               ->  Seq Scan on word w  (cost=0.00..3727.16 rows=1 width=4)
+                     Filter: ((word)::text = 'computer'::text)
+   ->  Hash  (cost=1563.52..1563.52 rows=54752 width=111)
+         ->  Seq Scan on url u  (cost=0.00..1563.52 rows=54752 width=111)
+
+(2)
+Hash Join  (cost=6884.09..3250631.96 rows=772 width=107)
+   Hash Cond: (t.urlid = (u.urlid)::double precision)
+   ->  Hash Join  (cost=3727.18..3235899.50 rows=778 width=8)
+         Hash Cond: (t.wid = w.wid)
+         ->  Seq Scan on word_to_url t  (cost=0.00..2629731.12 rows=160648912 width=12)
+         ->  Hash  (cost=3727.16..3727.16 rows=1 width=4)
+               ->  Seq Scan on word w  (cost=0.00..3727.16 rows=1 width=4)
+                     Filter: ((word)::text = 'student'::text)
+   ->  Hash  (cost=1563.52..1563.52 rows=54752 width=111)
+         ->  Seq Scan on url u  (cost=0.00..1563.52 rows=54752 width=111)
+
+(3)
+Hash Join  (cost=6884.09..3250631.96 rows=772 width=107)
+   Hash Cond: (t.urlid = (u.urlid)::double precision)
+   ->  Hash Join  (cost=3727.18..3235899.50 rows=778 width=8)
+         Hash Cond: (t.wid = w.wid)
+         ->  Seq Scan on word_to_url t  (cost=0.00..2629731.12 rows=160648912 width=12)
+         ->  Hash  (cost=3727.16..3727.16 rows=1 width=4)
+               ->  Seq Scan on word w  (cost=0.00..3727.16 rows=1 width=4)
+                     Filter: ((word)::text = 'admissions'::text)
+   ->  Hash  (cost=1563.52..1563.52 rows=54752 width=111)
+         ->  Seq Scan on url u  (cost=0.00..1563.52 rows=54752 width=111)
+
+(4)
+Hash Join  (cost=6884.09..3250631.96 rows=772 width=107)
+   Hash Cond: (t.urlid = (u.urlid)::double precision)
+   ->  Hash Join  (cost=3727.18..3235899.50 rows=778 width=8)
+         Hash Cond: (t.wid = w.wid)
+         ->  Seq Scan on word_to_url t  (cost=0.00..2629731.12 rows=160648912 width=12)
+         ->  Hash  (cost=3727.16..3727.16 rows=1 width=4)
+               ->  Seq Scan on word w  (cost=0.00..3727.16 rows=1 width=4)
+                     Filter: ((word)::text = 'carleton'::text)
+   ->  Hash  (cost=1563.52..1563.52 rows=54752 width=111)
+         ->  Seq Scan on url u  (cost=0.00..1563.52 rows=54752 width=111)
+
+
+create index wid_idx_wtu on word_to_url (wid);
+227217.312 ms
+
+(1)
+92.174 ms
+
+(2)
+850.588 ms
+
+(3)
+372.780 ms
+
+(4)
+1101.637 ms
+
+(1)
+ Hash Join  (cost=5055.28..6900.28 rows=772 width=107)
+   Hash Cond: ((u.urlid)::double precision = t.urlid)
+   ->  Seq Scan on url u  (cost=0.00..1563.52 rows=54752 width=111)
+   ->  Hash  (cost=5045.56..5045.56 rows=778 width=8)
+         ->  Nested Loop  (cost=0.57..5045.56 rows=778 width=8)
+               ->  Seq Scan on word w  (cost=0.00..3727.16 rows=1 width=4)
+                     Filter: ((word)::text = 'computer'::text)
+               ->  Index Scan using wid_idx_wtu on word_to_url t  (cost=0.57..1026.10 rows=29230 width=12)
+                     Index Cond: (wid = w.wid)
+
+(2)
+ Hash Join  (cost=5055.28..6900.28 rows=772 width=107)
+   Hash Cond: ((u.urlid)::double precision = t.urlid)
+   ->  Seq Scan on url u  (cost=0.00..1563.52 rows=54752 width=111)
+   ->  Hash  (cost=5045.56..5045.56 rows=778 width=8)
+         ->  Nested Loop  (cost=0.57..5045.56 rows=778 width=8)
+               ->  Seq Scan on word w  (cost=0.00..3727.16 rows=1 width=4)
+                     Filter: ((word)::text = 'student'::text)
+               ->  Index Scan using wid_idx_wtu on word_to_url t  (cost=0.57..1026.10 rows=29230 width=12)
+                     Index Cond: (wid = w.wid)
+
+(3)
+ Hash Join  (cost=5055.28..6900.28 rows=772 width=107)
+   Hash Cond: ((u.urlid)::double precision = t.urlid)
+   ->  Seq Scan on url u  (cost=0.00..1563.52 rows=54752 width=111)
+   ->  Hash  (cost=5045.56..5045.56 rows=778 width=8)
+         ->  Nested Loop  (cost=0.57..5045.56 rows=778 width=8)
+               ->  Seq Scan on word w  (cost=0.00..3727.16 rows=1 width=4)
+                     Filter: ((word)::text = 'admissions'::text)
+               ->  Index Scan using wid_idx_wtu on word_to_url t  (cost=0.57..1026.10 rows=29230 width=12)
+                     Index Cond: (wid = w.wid)
+
+(4)
+ Hash Join  (cost=5055.28..6900.28 rows=772 width=107)
+   Hash Cond: ((u.urlid)::double precision = t.urlid)
+   ->  Seq Scan on url u  (cost=0.00..1563.52 rows=54752 width=111)
+   ->  Hash  (cost=5045.56..5045.56 rows=778 width=8)
+         ->  Nested Loop  (cost=0.57..5045.56 rows=778 width=8)
+               ->  Seq Scan on word w  (cost=0.00..3727.16 rows=1 width=4)
+                     Filter: ((word)::text = 'carleton'::text)
+               ->  Index Scan using wid_idx_wtu on word_to_url t  (cost=0.57..1026.10 rows=29230 width=12)
+                     Index Cond: (wid = w.wid)
